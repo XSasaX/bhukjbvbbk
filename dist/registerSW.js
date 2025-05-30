@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/Karteikarte_Ver-nderbar/sw.js', { scope: '/Karteikarte_Ver-nderbar/' })})}
