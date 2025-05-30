@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcard Maker - Eigene Sets</title> <!-- Vite will handle this path -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="/Karteikarte_Ver-nderbar/manifest.json"> <!-- Path relative to root for Vite/PWA -->
+  <link rel="icon" href="/favicon.ico">
+  <meta name="theme-color" content="#8C52FF"> <!-- Updated to match new theme -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Flashcards">
+  <link rel="apple-touch-icon" href="/icons/icon-152x152.png"> <!-- Path relative to root -->
+
+
+<script type="importmap">
+{
+  "imports": {
+    "vite": "https://esm.sh/vite@^6.3.5",
+    "vite-plugin-pwa": "https://esm.sh/vite-plugin-pwa@^1.0.0"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/Karteikarte_Ver-nderbar/assets/index-Ca3jXJCh.js"></script>
+  <link rel="stylesheet" crossorigin href="/Karteikarte_Ver-nderbar/assets/index-yKNLJRIb.css">
+<link rel="manifest" href="/Karteikarte_Ver-nderbar/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/Karteikarte_Ver-nderbar/registerSW.js"></script></head>
+<body>
+  <div class="app-container">
+
+    <!-- Home View -->
+    <div id="homeView" class="view">
+      <header class="view-header">
+        <h1>Meine Kartensets</h1>
+        <button id="showCreateSetViewButton" class="button-primary">Neues Set erstellen</button>
+      </header>
+      <main class="view-main">
+        <div id="cardSetListContainer">
+          <p id="noSetsMessage" style="display: none;">Noch keine Kartensets vorhanden. Erstelle dein erstes Set!</p>
+          <ul id="cardSetList">
+            <!-- Card sets will be listed here -->
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Set View (Simplified) -->
+    <div id="createSetView" class="view" style="display: none;">
+      <header class="view-header">
+        <button id="backToHomeFromCreateButton" class="button-secondary back-button">&larr; Zurück</button>
+        <h1>Neues Kartenset benennen</h1>
+      </header>
+      <main class="view-main">
+        <form id="createSetForm">
+          <div class="form-group">
+            <label for="newCardSetName">Name des Kartensets:</label>
+            <input type="text" id="newCardSetName" required>
+          </div>
+          <button type="submit" id="saveNewSetButton" class="button-primary">Kartenset erstellen</button>
+        </form>
+      </main>
+    </div>
+
+    <!-- Edit Set View (New / Replaces old Create Set's card adding part) -->
+    <div id="editSetView" class="view" style="display: none;">
+      <header class="view-header">
+        <button id="backToHomeFromEditButton" class="button-secondary back-button">&larr; Zurück</button>
+        <h1 id="editSetViewTitle">Kartenset bearbeiten</h1>
+      </header>
+      <main class="view-main">
+        <form id="editSetForm">
+          <div class="form-group">
+            <label for="editingCardSetName">Name des Kartensets:</label>
+            <input type="text" id="editingCardSetName" required>
+          </div>
+          
+          <h2>Karten verwalten:</h2>
+          <div class="form-group">
+            <label for="editingCardTerm">Begriff:</label>
+            <input type="text" id="editingCardTerm">
+          </div>
+          <div class="form-group">
+            <label for="editingCardDefinition">Definition:</label>
+            <textarea id="editingCardDefinition"></textarea>
+          </div>
+          <button type="button" id="addCardToEditingSetButton" class="button-secondary">Karte zum Set hinzufügen</button>
+          
+          <div id="editingCardsInSetContainer">
+            <h3>Karten in diesem Set:</h3>
+            <ul id="editingCardsListUl">
+              <!-- Cards in the current set will appear here -->
+            </ul>
+            <p id="noCardsInSetMessage" style="display: none;">Noch keine Karten in diesem Set.</p>
+          </div>
+          
+          <button type="submit" id="saveSetChangesButton" class="button-primary">Änderungen speichern</button>
+        </form>
+      </main>
+    </div>
+
+
+    <!-- Learn View -->
+    <div id="learnView" class="view" style="display: none;">
+      <header class="app-header">
+        <button id="backToHomeFromLearnButton" class="button-secondary back-button" style="position: absolute; top: 15px; left: 15px; z-index: 100;">&larr; Zurück</button>
+        <h1 id="learnViewTitle">Lernkarten</h1>
+        <p>Wische Karten nach rechts (gewusst) oder links (üben). Klicke zum Umdrehen. Nutze A/D für Links/Rechts.</p>
+        <div id="progressContainer" class="progress-container">
+          <span id="cardCounter"></span>
+        </div>
+      </header>
+      
+      <main id="flashcardsContainer" class="flashcards-container">
+        <!-- Active flashcard will be displayed here -->
+      </main>
+
+      <div id="controlsContainer" class="controls-container">
+          <button id="swipeLeftButton" class="swipe-button" aria-label="Nach links wischen (nicht gewusst)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+          </button>
+          <!-- Restart button will be added here by JS -->
+          <button id="swipeRightButton" class="swipe-button" aria-label="Nach rechts wischen (gewusst)">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
+          </button>
+      </div>
+    </div>
+    
+  </div>
+  <footer>
+    Viel Erfolg beim Lernen!
+  </footer> <!-- Updated to point to src/index.tsx -->
+</body>
+</html>
